@@ -1,5 +1,5 @@
 """
-YOLO Vision — Detection Module
+Detectra AI — Detection Module
 detect.py
 
 Wraps Ultralytics YOLOv8 to provide a clean detection API.

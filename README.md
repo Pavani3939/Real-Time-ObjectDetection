@@ -1,4 +1,4 @@
-# YOLO Vision — Real-Time Object Detection Dashboard
+# Detectra AI — Real-Time Object Detection Dashboard
 ### Final Year Project — YOLOv8 + Flask + SQLite
 
 ---

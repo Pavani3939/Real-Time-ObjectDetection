@@ -1,5 +1,5 @@
 """
-YOLO Vision — Flask Backend API
+Detectra AI — Flask Backend API
 app.py
 
 Endpoints:
@@ -35,7 +35,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def index():
-    return jsonify({'status': 'ok', 'message': 'YOLO Vision Backend is running!'})
+    return jsonify({'status': 'ok', 'message': 'Detectra AI Backend is running!'})
 
 # Allow requests from the frontend (adjust origin in production)
 CORS(app, origins=["http://localhost:8000", "http://127.0.0.1:8000",

@@ -5,7 +5,7 @@ opencv-python-headless
 numpy
 
 
-# YOLO Vision — Python Dependencies
+# Detectra AI — Python Dependencies
 # Install with: pip install -r requirements.txt
 
 # Core detection

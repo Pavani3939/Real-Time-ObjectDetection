@@ -1,5 +1,5 @@
 /**
- * YOLO Vision — AI Object Detection Dashboard
+ * Detectra AI — Real-Time Object Detection Dashboard
  * script.js
  *
  * Handles: page routing, image upload, webcam detection,
