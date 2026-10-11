@@ -1,0 +1,28 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Database
+database/*.db
+
+# Uploads (exclude runtime user uploads, keep folder)
+uploads/*
+!uploads/.gitkeep
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ultralytics runs/cache
+runs/
+*.log
