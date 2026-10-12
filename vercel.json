@@ -1,14 +1,22 @@
 {
-  "builds": [
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
     {
-      "src": "app.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
+      "source": "/",
+      "destination": "/frontend/index.html"
+    },
     {
-      "src": "/(.*)",
-      "dest": "app.py"
+      "source": "/style.css",
+      "destination": "/frontend/style.css"
+    },
+    {
+      "source": "/script.js",
+      "destination": "/frontend/script.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/$1"
     }
   ]
 }
