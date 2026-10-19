@@ -2,7 +2,7 @@
 
 **Detectra AI** is an intelligent, full-stack computer vision application engineered to detect, classify, and track real-world objects in real time. Powered by Ultralytics YOLOv8, Flask, and an interactive dark-themed dashboard, the system processes image uploads and live webcam streams with high frame rates, precision bounding boxes, and comprehensive analytics.
 
-🚀 **[Live Demo](https://real-time-object-detection-1obp.vercel.app/)**  
+🚀 **[Live Demo](https://real-time-object-detection-3pcr.vercel.app/dashboard)**  
 *(Note: The live demo frontend runs on Vercel. To utilize full local inference and live webcam stream detection with the YOLOv8 AI engine, please follow the local setup instructions below.)*
 
 ---
