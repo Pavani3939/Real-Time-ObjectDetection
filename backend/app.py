@@ -14,14 +14,9 @@ Run with:
 """
 
 import os
-import sys
 import json
 import sqlite3
 from datetime import datetime
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -33,10 +28,6 @@ from detect import run_detection, init_model
 # ─────────────────────────────────────────────────────────
 app = Flask(__name__)
 
-@app.route('/', methods=['GET'])
-def index():
-    return jsonify({'status': 'ok', 'message': 'Detectra AI Backend is running!'})
-
 # Allow requests from the frontend (adjust origin in production)
 CORS(app, origins=["http://localhost:8000", "http://127.0.0.1:8000",
                    "http://localhost:5500", "http://127.0.0.1:5500",
@@ -44,14 +35,16 @@ CORS(app, origins=["http://localhost:8000", "http://127.0.0.1:8000",
      supports_credentials=True)
 
 # Folders
-BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, '..', 'uploads')
-DB_PATH       = os.path.join(BASE_DIR, '..', 'database', 'detections.db')
-MODEL_PATH    = os.path.join(BASE_DIR, 'yolov8n.pt')
+BASE_DIR        = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_FOLDER = os.path.join(BASE_DIR, '..', 'frontend')
+UPLOAD_FOLDER   = os.path.join(BASE_DIR, '..', 'uploads')
+DB_PATH         = os.path.join(BASE_DIR, '..', 'database', 'detections.db')
+MODEL_PATH      = os.path.join(BASE_DIR, '..', 'model', 'best.pt')
+
+# If custom model doesn't exist, check local yolov8n.pt or fall back
 if not os.path.exists(MODEL_PATH):
-    MODEL_PATH = os.path.join(BASE_DIR, '..', 'model', 'best.pt')
-    if not os.path.exists(MODEL_PATH):
-        MODEL_PATH = 'yolov8n.pt'
+    local_nano = os.path.join(BASE_DIR, 'yolov8n.pt')
+    MODEL_PATH = local_nano if os.path.exists(local_nano) else 'yolov8n.pt'
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -275,15 +268,37 @@ def health_check():
     return jsonify({'status': 'ok', 'model': MODEL_PATH})
 
 
-print("[*] Initialising database...")
-init_db()
+# ─────────────────────────────────────────────────────────
+# ROUTE: GET / and Frontend static files
+# ─────────────────────────────────────────────────────────
+@app.route('/', methods=['GET'])
+def serve_index():
+    return send_from_directory(FRONTEND_FOLDER, 'index.html')
 
-print(f"[*] Loading YOLOv8 model from: {MODEL_PATH}")
-init_model(MODEL_PATH)
+
+@app.route('/<path:filename>', methods=['GET'])
+def serve_frontend_assets(filename):
+    # Don't hijack backend API routes
+    if filename.startswith('detect-image') or filename.startswith('webcam-detect') or \
+       filename.startswith('history') or filename.startswith('uploads') or filename.startswith('health'):
+        return jsonify({'error': 'Not found'}), 404
+
+    file_path = os.path.join(FRONTEND_FOLDER, filename)
+    if os.path.isfile(file_path):
+        return send_from_directory(FRONTEND_FOLDER, filename)
+    # SPA fallback for client-side routes (/dashboard, /detection, /statistics, /history, etc.)
+    return send_from_directory(FRONTEND_FOLDER, 'index.html')
+
 
 # ─────────────────────────────────────────────────────────
 # Startup
 # ─────────────────────────────────────────────────────────
 if __name__ == '__main__':
+    print("[*] Initialising database...")
+    init_db()
+
+    print(f"[*] Loading YOLOv8 model from: {MODEL_PATH}")
+    init_model(MODEL_PATH)
+
     print("[*] Starting Flask server on http://127.0.0.1:5000")
     app.run(debug=False, host='127.0.0.1', port=5000)

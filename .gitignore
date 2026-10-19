@@ -17,6 +17,9 @@ database/*.db
 uploads/*
 !uploads/.gitkeep
 
+# Local frontend backup
+frontend_v1/
+
 # IDE and OS files
 .vscode/
 .idea/

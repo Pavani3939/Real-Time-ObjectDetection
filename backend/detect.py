@@ -23,30 +23,34 @@ def init_model(model_path: str):
     Load the YOLOv8 model into memory.
     Called once when the Flask app starts.
 
-    Attempts to load the specified model, and falls back to
-    the local or default YOLOv8n model if needed.
+    Falls back to the pretrained YOLOv8n model if the
+    custom weights file is not found at model_path.
     """
     global _model, _model_path
 
-    # Determine fallback candidate paths
-    local_nano = os.path.join(os.path.dirname(__file__), 'yolov8n.pt')
-    fallback_model = local_nano if os.path.exists(local_nano) else 'yolov8n.pt'
+    backend_dir = os.path.dirname(os.path.abspath(__file__))
+    local_yolov8n = os.path.join(backend_dir, 'yolov8n.pt')
 
-    target_path = model_path
-    if not os.path.exists(target_path):
-        print(f"[WARN] Model file not found at '{model_path}'. Falling back to: {fallback_model}")
-        target_path = fallback_model
+    loaded = False
+    candidates = [model_path, local_yolov8n, 'yolov8n.pt']
+    for candidate in candidates:
+        if not candidate:
+            continue
+        if candidate == 'yolov8n.pt' or os.path.exists(candidate):
+            try:
+                print(f"[INFO] Loading YOLO model from: {candidate}")
+                _model = YOLO(candidate)
+                _model_path = candidate
+                print(f"[OK] Model loaded successfully: {candidate}")
+                loaded = True
+                break
+            except Exception as err:
+                print(f"[WARN] Failed to load model from {candidate}: {err}")
 
-    try:
-        print(f"[INFO] Loading YOLO model from: {target_path}")
-        _model = YOLO(target_path)
-        _model_path = target_path
-    except Exception as exc:
-        print(f"[WARN] Failed to load model from '{target_path}': {exc}. Trying fallback: {fallback_model}")
-        _model = YOLO(fallback_model)
-        _model_path = fallback_model
-
-    print(f"[OK] Model loaded: {_model_path}")
+    if not loaded:
+        print("[INFO] Fallback: downloading/loading default yolov8n.pt")
+        _model = YOLO('yolov8n.pt')
+        _model_path = 'yolov8n.pt'
 
     # Warm up the model with a dummy forward pass
     dummy = torch.zeros(1, 3, 640, 640)
